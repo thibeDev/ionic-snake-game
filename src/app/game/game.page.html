@@ -1,0 +1,24 @@
+<!--
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Snake</ion-title>
+  </ion-toolbar>
+</ion-header>
+-->
+
+<ion-content>
+  <div class="ion-canvas">
+    <canvas #canvas></canvas>
+  </div>
+  <div id="nav" style="height: 150px">
+    <ion-item text-center="">
+      <ion-button (click)="onUp()">UP</ion-button>
+    </ion-item>
+    <ion-item>
+      <ion-button (click)="onLeft()">LEFT</ion-button><ion-button (click)="onRight()">RIGHT</ion-button>
+    </ion-item>
+    <ion-item>
+      <ion-button (click)="onDown()">DOWN</ion-button>
+    </ion-item>
+  </div>
+</ion-content>
