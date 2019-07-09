@@ -1,6 +1,6 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {Platform} from '@ionic/angular';
-import {element} from 'protractor';
+// @ts-ignore
+import nipplejs from 'nipplejs';
 
 @Component({
   selector: 'app-game',
@@ -13,6 +13,7 @@ export class GamePage implements OnInit {
    * 'plug into' DOM canvas element using @ViewChild
    */
   @ViewChild('canvas') canvasEl : ElementRef;
+  @ViewChild('joystick') joystickEl : ElementRef;
   /**
    * Reference Canvas object
    */
@@ -21,6 +22,8 @@ export class GamePage implements OnInit {
    * Reference the context for the Canvas element
    */
   private _CONTEXT : any;
+  private _JOYSTICK: any;
+  private manager: any;
   private height: number;
   private width: number;
 
@@ -31,14 +34,34 @@ export class GamePage implements OnInit {
   private foodX: number;
   private foodY: number;
 
-  constructor( private platform: Platform) { }
+  public score: number = 0;
+
+  constructor() { }
 
   ngOnInit() {
-    this.height = this.platform.height() - 150;
-    this.width = this.platform.width();
-    this._CANVAS 	    = this.canvasEl.nativeElement;
-    this._CANVAS.width  	= this.width;
-    this._CANVAS.height 	= this.height;
+    this.height = window.innerHeight;
+    this.width = window.innerWidth;
+    this._CANVAS = this.canvasEl.nativeElement;
+    this._CANVAS.width = window.innerWidth;
+    this._CANVAS.height = window.innerHeight;
+    this._JOYSTICK = this.joystickEl.nativeElement;
+    var options = {
+      zone: this._JOYSTICK,
+      color: 'blue'
+    };
+    this.manager = nipplejs.create(options);
+    this.manager.on('dir:up', ()=>{
+      this.onUp();
+    });
+    this.manager.on('dir:down', ()=>{
+      this.onDown();
+    });
+    this.manager.on('dir:left', ()=>{
+      this.onLeft();
+    });
+    this.manager.on('dir:right', ()=>{
+      this.onRight();
+    });
     this.createFood();
     this.main();
 
@@ -77,28 +100,28 @@ export class GamePage implements OnInit {
     let head;
     switch (this.direction) {
       case 'up':
-        if(this.snake[0].y == 0){
+        if(this.snake[0].y <= 0){
           head = {x: this.snake[0].x + this.dx, y: this.snake[0].y + this._CANVAS.height};
         }else{
           head = {x: this.snake[0].x + this.dx, y: this.snake[0].y + this.dy};
         }
         break;
       case 'right':
-        if(this.snake[0].x == this.width ){
+        if(this.snake[0].x >= this._CANVAS.width ){
           head = {x: 0, y: this.snake[0].y  + this.dy};
         }else{
           head = {x: this.snake[0].x + this.dx, y: this.snake[0].y + this.dy};
         }
         break;
       case 'left':
-        if(this.snake[0].x == 0){
+        if(this.snake[0].x <= 0){
           head = {x: this.width, y: this.snake[0].y  + this.dy};
         }else{
           head = {x: this.snake[0].x + this.dx, y: this.snake[0].y + this.dy};
         }
         break;
       case 'down':
-        if(this.snake[0].y == this._CANVAS.height){
+        if(this.snake[0].y >= this._CANVAS.height){
           head = {x: this.snake[0].x + this.dx, y: 0};
         }else{
           head = {x: this.snake[0].x + this.dx, y: this.snake[0].y + this.dy};
@@ -107,7 +130,10 @@ export class GamePage implements OnInit {
     }
     this.snake.unshift(head);
     const didEatFood = this.snake[0].x === this.foodX && this.snake[0].y === this.foodY;
-    if (didEatFood) this.createFood();
+    if (didEatFood){
+      this.score ++;
+      this.createFood();
+    }
     else this.snake.pop();
   }
 
@@ -152,13 +178,6 @@ export class GamePage implements OnInit {
       this.dx = 0;
       this.dy = 10;
     }
-  }
-
-  resetGoing(){
-    this.goingDown = false;
-    this.goingUp = false;
-    this.goingRight = false;
-    this.goingLeft = false;
   }
 
   randomTen(min, max) {
