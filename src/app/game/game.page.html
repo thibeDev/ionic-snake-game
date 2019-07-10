@@ -1,6 +1,23 @@
 <ion-content >
-  <ion-badge padding color="tertiary" style="opacity: 0.5; position: absolute; top:10px; right: 10px"><h1>{{ score }}</h1></ion-badge>
-  <div  #joystick class="ion-canvas">
-    <canvas #canvas></canvas>
-  </div>
+    <ion-badge padding color="tertiary" style="opacity: 0.5; position: absolute; top:10px; right: 10px">
+      <h1>Score: {{ score }}</h1>
+        <p>Time: {{ timer }}</p>
+    </ion-badge>
+    <div  #joystick class="ion-canvas">
+      <canvas #canvas></canvas>
+    </div>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-row>
+      <ion-col>
+        <ion-fab-button style="opacity: 0.5" (click)="onSpeedDown()" >
+          <ion-icon name="rewind"></ion-icon>
+        </ion-fab-button>
+      </ion-col>
+      <ion-col>
+        <ion-fab-button style="opacity: 0.5" (click)="onSpeedUp()" >
+          <ion-icon name="fastforward"></ion-icon>
+        </ion-fab-button>
+      </ion-col>
+    </ion-row>
+  </ion-fab>
 </ion-content>

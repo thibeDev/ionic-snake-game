@@ -35,6 +35,9 @@ export class GamePage implements OnInit {
   private foodY: number;
 
   public score: number = 0;
+  public mode: boolean = true;
+  public speed: number = 200;
+  public timer: number = 0;
 
   constructor() { }
 
@@ -64,6 +67,9 @@ export class GamePage implements OnInit {
     });
     this.createFood();
     this.main();
+    setInterval(()=> {
+      this.timer ++;
+    }, 1000);
 
   }
 
@@ -101,7 +107,7 @@ export class GamePage implements OnInit {
     switch (this.direction) {
       case 'up':
         if(this.snake[0].y <= 0){
-          head = {x: this.snake[0].x + this.dx, y: this.snake[0].y + this._CANVAS.height};
+          head = {x: this.snake[0].x + this.dx, y: this.snake[0].y + Math.ceil(this._CANVAS.height / 10) * 10};
         }else{
           head = {x: this.snake[0].x + this.dx, y: this.snake[0].y + this.dy};
         }
@@ -115,7 +121,7 @@ export class GamePage implements OnInit {
         break;
       case 'left':
         if(this.snake[0].x <= 0){
-          head = {x: this.width, y: this.snake[0].y  + this.dy};
+          head = {x: Math.ceil(this._CANVAS.width / 10) * 10, y: this.snake[0].y  + this.dy};
         }else{
           head = {x: this.snake[0].x + this.dx, y: this.snake[0].y + this.dy};
         }
@@ -142,9 +148,10 @@ export class GamePage implements OnInit {
       this.initialiseCanvas();
       this.drawFood();
       this.advanceSnake();
+      this.biteItSelf(this.snake);
       this.drawSnake();
       this.main();
-      }, 100)
+      }, this.speed)
   }
 
   onUp() {
@@ -198,5 +205,23 @@ export class GamePage implements OnInit {
     this._CONTEXT.strokestyle = 'darkred';
     this._CONTEXT.fillRect(this.foodX, this.foodY, 10, 10);
     this._CONTEXT.strokeRect(this.foodX, this.foodY, 10, 10);
+  }
+
+  biteItSelf(snake) {
+    snake.forEach((snakePart, index)=>{
+      if(index > 1) {
+        if(snake[0].x === snakePart.x && snake[0].y === snakePart.y){
+          this.mode = false;
+          alert('PERDU!!');
+        }
+      }
+    });
+  }
+
+  onSpeedUp() {
+    this.speed -= 10;
+  }
+  onSpeedDown(){
+    this.speed += 10;
   }
 }
