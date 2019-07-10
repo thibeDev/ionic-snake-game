@@ -27,7 +27,9 @@
     "cordova-android": "8.0.0",
     "core-js": "^2.5.4",
     "nipplejs": "^0.8.2",
+    "reimg": "^1.0.0",
     "rxjs": "~6.5.1",
+    "sweetalert2": "^8.13.4",
     "tslib": "^1.9.0",
     "zone.js": "~0.8.29"
   },
