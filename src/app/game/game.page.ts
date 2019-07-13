@@ -1,6 +1,7 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 // @ts-ignore
 import nipplejs from 'nipplejs';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-game',
@@ -38,6 +39,9 @@ export class GamePage implements OnInit {
   public mode: boolean = true;
   public speed: number = 200;
   public timer: number = 0;
+  public time: any;
+  private gameStatus: any;
+  private pause: boolean = false;
 
   constructor() { }
 
@@ -69,6 +73,7 @@ export class GamePage implements OnInit {
     this.main();
     setInterval(()=> {
       this.timer ++;
+      this.time = this.secondsToHms(this.timer);
     }, 1000);
 
   }
@@ -144,14 +149,19 @@ export class GamePage implements OnInit {
   }
 
   main() {
-    setTimeout(()=> {
+    this.gameStart();
+  }
+  
+  gameStart() {
+    this.gameStatus = setTimeout(()=> {
       this.initialiseCanvas();
       this.drawFood();
       this.advanceSnake();
       this.biteItSelf(this.snake);
       this.drawSnake();
       this.main();
-      }, this.speed)
+    }, this.speed)
+    console.log(this.gameStatus);
   }
 
   onUp() {
@@ -212,7 +222,23 @@ export class GamePage implements OnInit {
       if(index > 1) {
         if(snake[0].x === snakePart.x && snake[0].y === snakePart.y){
           this.mode = false;
-          alert('PERDU!!');
+          Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+          }).then((result) => {
+            if (result.value) {
+              Swal.fire(
+                  'Deleted!',
+                  'Your file has been deleted.',
+                  'success'
+              )
+            }
+          })
         }
       }
     });
@@ -223,5 +249,26 @@ export class GamePage implements OnInit {
   }
   onSpeedDown(){
     this.speed += 10;
+  }
+
+  secondsToHms(d) {
+    d = Number(d);
+
+    var h = Math.floor(d / 3600);
+    var m = Math.floor(d % 3600 / 60);
+    var s = Math.floor(d % 3600 % 60);
+
+    return ('0' + h).slice(-2) + ":" + ('0' + m).slice(-2) + ":" + ('0' + s).slice(-2);
+  }
+
+  onPause() {
+    if (!this.pause){
+      this.pause = true;
+      clearInterval(this.gameStatus);
+    }
+    else{
+      this.pause = false;
+      this.gameStart();
+    }
   }
 }
